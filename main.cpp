@@ -24,33 +24,27 @@ int main(int argc, char* argv[])
 	// MLP parameters
 	int nHLayer = 3; // min = 1, otherwise it is not a MLP
 	cout<<"Number of hidden layers: "<<nHLayer<<endl;	
-	int maxout_units = 128;
+	int maxout_units = 512;
 	cout<<"Maxout units: "<<maxout_units<<endl;
 	int maxout_pieces = 4;
 	cout<<"Maxout pieces: "<<maxout_pieces<<endl;
 	
 	// SGD parameters
-	double learningRate = .1;
+	float learningRate = .1;
 	cout<<"Learning rate: "<<learningRate<<endl;
-	double LR_decay = .99;
+	float LR_decay = .99;
 	cout<<"Learning rate decay factor: "<<LR_decay<<endl;
-	double LR_min = .01;
-	cout<<"Learning rate minimum: "<<LR_min<<endl;
-	double momentum = .9;
+	float momentum = .9;
 	cout<<"Momentum: "<<momentum<<endl;
-	int momentum_sat = 100;
-	cout<<"Momentum saturate: "<<momentum_sat<<endl;
-	double momentum_fin = .9;
-	cout<<"Momentum final value: "<<momentum_fin<<endl;
-	int earlyStop = 100;
-	cout<<"Early stop: "<<earlyStop<<endl;
-	int batch_size = 100;
+	int nEpochs = 5;
+	cout<<"nEpochs: "<<nEpochs<<endl;
+	int batch_size = 400;
 	cout<<"Batch size: "<<batch_size<<endl;
-	double dropout_input = .8;
+	float dropout_input = .8;
 	cout<<"Dropout input layer: "<<dropout_input<<endl;
-	double dropout_hidden = .5;
+	float dropout_hidden = .5;
 	cout<<"Dropout hidden layers: "<<dropout_hidden<<endl;
-	double max_col_norm = 2.;
+	float max_col_norm = 2.;
 	cout<<"Max column norm: "<<max_col_norm<<endl;
 	
 	// load trainingSet
@@ -75,9 +69,8 @@ int main(int argc, char* argv[])
 	
 	// neural network training
 	trainNetwork(NN, trainingSet, validationSet, testSet, 
-		learningRate, LR_decay, LR_min, 
-		earlyStop, 
-		momentum, momentum_sat, momentum_fin);
+		learningRate, LR_decay, momentum, 
+		nEpochs);
 	
 	cout << endl << "-- END OF PROGRAM --" << endl << endl;
 	return 1;

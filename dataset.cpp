@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include <Eigen/Core>
-using Eigen::MatrixXd;
+using Eigen::MatrixXf;
 using namespace std;
 
 void dataSet::loadPatterns(const char* filename, int batch_size)
@@ -32,10 +32,10 @@ void dataSet::loadPatterns(const char* filename, int batch_size)
 		size = (int) (size/batch_size);		
 		
 		// dynamic allocation of memory
-		pattern = new MatrixXd*[size];
+		pattern = new MatrixXf*[size];
 		for (int i = 0; i < size; i++) 
 		{
-			pattern[i] = new MatrixXd(batch_size, nPattern);
+			pattern[i] = new MatrixXf(batch_size, nPattern);
 		}
 
 		// fill the array with the data
@@ -47,7 +47,7 @@ void dataSet::loadPatterns(const char* filename, int batch_size)
 				{
 					unsigned char temp = 0;
 					file.read((char*)&temp, sizeof(temp));
-					(*(pattern[i]))(j,k) = (double)(temp)/255.0;
+					(*(pattern[i]))(j,k) = (float)(temp)/255.0;
 				}
 			}
 		}
@@ -83,10 +83,10 @@ void dataSet::loadTargets(const char* filename, int batch_size)
 		nTarget = 10;
 
 		// dynamic allocation of memory
-		target = new MatrixXd*[size];
+		target = new MatrixXf*[size];
 		for (int i = 0; i < size; i++) 
 		{
-			target[i] = new MatrixXd(batch_size, nTarget);
+			target[i] = new MatrixXf(batch_size, nTarget);
 		}
 
 		// fill the array with the data

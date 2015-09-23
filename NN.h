@@ -21,14 +21,14 @@ Specifications of the model :
 #include "dataset.h"
 #include "layer.h"
 #include <Eigen/Core>
-using Eigen::MatrixXd;
+using Eigen::MatrixXf;
 
 class neuralNetwork
 {
 
 public:
 	
-	MatrixXd x;
+	MatrixXf x;
 	
 	maxout_layer** hidden_layer;
 	softmax_layer * output_layer;
@@ -39,22 +39,22 @@ public:
 	int output_units;
 	int maxout_units;
 	int maxout_pieces;
-	double dropout_input;
-	double dropout_hidden;
-	double max_col_norm;	
+	float dropout_input;
+	float dropout_hidden;
+	float max_col_norm;	
 
 	//constructor & destructor
 	neuralNetwork(int p_hidden_layer, int p_input_units, int p_output_units, int p_maxout_units, int p_maxout_pieces, 
-		int p_batch_size, double p_dropout_input, double p_dropout_hidden, double p_max_col_norm);
+		int p_batch_size, float p_dropout_input, float p_dropout_hidden, float p_max_col_norm);
 		
 	~neuralNetwork(){}
 
 	//weight operations
 	void init();
-	void fProp(MatrixXd* p_x, bool test);
-	void bProp(MatrixXd* t, double learningRate, double momentum);
-	void test(dataSet* set, double* error, double* nll);// Return the NN accuracy on the set
-	void train(dataSet* set, double LR, double momentum);
+	void fProp(MatrixXf* p_x, bool test);
+	void bProp(MatrixXf* t, float learningRate, float momentum);
+	void test(dataSet* set, float* error, float* nll);// Return the NN accuracy on the set
+	void train(dataSet* set, float LR, float momentum);
 	void save();
 	void load();
 };

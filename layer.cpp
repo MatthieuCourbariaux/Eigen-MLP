@@ -20,12 +20,12 @@ void layer::load()
 
 void layer::fprop_weighted_sum(bool test)
 {
-	if(test) z = (*x) * w.transpose() * scale + MatrixXd::Constant(batch_size,1,1) * b;
+	if(test) z = (*x) * w.transpose() * scale + MatrixXf::Constant(batch_size,1,1) * b;
 	else
 	{
 		dropout();
 		*x = (*x).cwiseProduct(dropout_mask);
-		z = (*x) * w.transpose() + MatrixXd::Constant(batch_size,1,1) * b;
+		z = (*x) * w.transpose() + MatrixXf::Constant(batch_size,1,1) * b;
 	}
 }
 
@@ -36,10 +36,10 @@ void layer::bprop_weighted_sum()
 	*dEdx = (*dEdx).cwiseProduct(dropout_mask);
 }
 
-void layer::update(double LR, double momentum)
+void layer::update(float LR, float momentum)
 {		
 	// gradient of parameters
-	dEdb = MatrixXd::Constant(1,batch_size, 1) * dEdz; // dE/db = dz/db * dE/dz with dz/db = 1
+	dEdb = MatrixXf::Constant(1,batch_size, 1) * dEdz; // dE/db = dz/db * dE/dz with dz/db = 1
 	dEdw = dEdz.transpose() * (*x); // dE/dw = dz/dw * dE/dz with dz/dw = x
 	
 	// update
@@ -68,7 +68,7 @@ void layer::dropout()
 // It is like every neuron has a maximum incoming energy
 void layer::column_normalization()
 {
-	double norm;
+	float norm;
 	
 	for(int i=0;i<w.rows();i++)
 	{
@@ -103,8 +103,8 @@ void layer::column_normalization()
 }
 
 maxout_layer::maxout_layer(int p_n_inputs, int p_n_units, int p_n_pieces,
-		MatrixXd* p_x, MatrixXd* p_dEdx, 
-		int p_batch_size, double p_activation_rate, double p_scale, double p_max_col_norm)
+		MatrixXf* p_x, MatrixXf* p_dEdx, 
+		int p_batch_size, float p_activation_rate, float p_scale, float p_max_col_norm)
 {
 	n_inputs = p_n_inputs;
 	n_units = p_n_units;
@@ -159,7 +159,7 @@ void maxout_layer::maxout_derivative()
 {	
 	dEdz.setZero();
 	int max_index;
-	double max;
+	float max;
 	
 	for(int i=0;i<dEdz.rows();i++)
 	{
@@ -189,14 +189,14 @@ void maxout_layer::init()
 	update_b.setZero();
 	
 	// init w randomly
-	double range = sqrt(6. / ((double)(w.rows() + w.cols())));
+	float range = sqrt(6. / ((float)(w.rows() + w.cols())));
 
 	for (int i = 0; i<w.rows(); ++i) 
 	{
 		// initialize in [-range;range]
 		for (int j = 0; j < w.cols(); ++j) 
 		{	
-			w(i,j) = ((double)rand() / (double)RAND_MAX) * 2 * range - range;
+			w(i,j) = ((float)rand() / (float)RAND_MAX) * 2 * range - range;
 		}
 	}
 	
@@ -209,7 +209,7 @@ void maxout_layer::fprop(bool test)
 	maxout();
 }
 
-void maxout_layer::bprop(double LR, double momentum)
+void maxout_layer::bprop(float LR, float momentum)
 {
 	maxout_derivative();
 	if(dEdx != NULL) 
@@ -221,8 +221,8 @@ void maxout_layer::bprop(double LR, double momentum)
 }
 
 softmax_layer::softmax_layer(int p_n_inputs, int p_n_units,
-		MatrixXd* p_x, MatrixXd* p_dEdx,
-		int p_batch_size, double p_activation_rate, double p_scale, double p_max_col_norm)
+		MatrixXf* p_x, MatrixXf* p_dEdx,
+		int p_batch_size, float p_activation_rate, float p_scale, float p_max_col_norm)
 {
 	n_inputs = p_n_inputs;
 	n_units = p_n_units;
@@ -256,8 +256,8 @@ softmax_layer::softmax_layer(int p_n_inputs, int p_n_units,
 
 void softmax_layer::softmax()
 {
-	double sum;
-	double buffer[z.cols()];
+	float sum;
+	float buffer[z.cols()];
 	
 	for(int i=0;i<y.rows();i++)
 	{
@@ -292,7 +292,7 @@ void softmax_layer::fprop(bool test)
 	softmax();
 }
 
-void softmax_layer::bprop(MatrixXd* t, double LR, double momentum)
+void softmax_layer::bprop(MatrixXf* t, float LR, float momentum)
 {	
 	// The error function is the mean of NLL of the outputs
 	// The output layer activation is Softmax
@@ -306,9 +306,9 @@ void softmax_layer::bprop(MatrixXd* t, double LR, double momentum)
 	update(LR, momentum);
 }
 
-double softmax_layer::nll_sum(MatrixXd* t)
+float softmax_layer::nll_sum(MatrixXf* t)
 {
-	double sum = 0;
+	float sum = 0;
 	
 	for (int i = 0; i<y.rows(); ++i) 
 	{
@@ -321,7 +321,7 @@ double softmax_layer::nll_sum(MatrixXd* t)
 	return sum;
 }
 
-int softmax_layer::getLineMaxIndex(MatrixXd* X, int line)
+int softmax_layer::getLineMaxIndex(MatrixXf* X, int line)
 {
 	int maxIndex = 0;
 

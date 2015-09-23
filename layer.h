@@ -3,7 +3,7 @@
 #define NNLayer
 
 #include <Eigen/Core>
-using Eigen::MatrixXd;
+using Eigen::MatrixXf;
 using namespace std;
 
 class layer
@@ -15,29 +15,29 @@ public:
 	int n_units;
 	
 	int batch_size;
-	double activation_rate;
-	double scale;
-	double max_col_norm;
+	float activation_rate;
+	float scale;
+	float max_col_norm;
 	
-	MatrixXd w; // weight matrix
-	MatrixXd w_best;
-	MatrixXd dEdw; 
-	MatrixXd update_w;
+	MatrixXf w; // weight matrix
+	MatrixXf w_best;
+	MatrixXf dEdw; 
+	MatrixXf update_w;
 	
-	MatrixXd b; // bias vector
-	MatrixXd b_best;
-	MatrixXd dEdb; 
-	MatrixXd update_b;
+	MatrixXf b; // bias vector
+	MatrixXf b_best;
+	MatrixXf dEdb; 
+	MatrixXf update_b;
 	
-	MatrixXd* x;
-	MatrixXd y;
+	MatrixXf* x;
+	MatrixXf y;
 	
-	MatrixXd* dEdx;
+	MatrixXf* dEdx;
 	
-	MatrixXd z;
-	MatrixXd dEdz;
+	MatrixXf z;
+	MatrixXf dEdz;
 	
-	MatrixXd dropout_mask;
+	MatrixXf dropout_mask;
 	
 	layer(){}
 	~layer(){}
@@ -46,7 +46,7 @@ public:
 	void load();
 	void fprop_weighted_sum(bool test);
 	void bprop_weighted_sum();
-	void update(double LR, double momentum);
+	void update(float LR, float momentum);
 	
 	// dropout
 	void dropout();
@@ -61,20 +61,20 @@ class maxout_layer: public layer
 public:
 	
 	int n_pieces;
-	MatrixXd dEdy;
+	MatrixXf dEdy;
 	
 	maxout_layer(){}
 	~maxout_layer(){}
 	
 	maxout_layer(int p_n_inputs, int p_n_units, int p_n_pieces,
-			MatrixXd* x, MatrixXd* dEdx,
-			int p_batch_size, double p_activation_rate, double p_scale, double p_max_col_norm);
+			MatrixXf* x, MatrixXf* dEdx,
+			int p_batch_size, float p_activation_rate, float p_scale, float p_max_col_norm);
 	
 	void maxout();
 	void maxout_derivative();
 	void init();
 	void fprop(bool test);
-	void bprop(double LR, double momentum);
+	void bprop(float LR, float momentum);
 };
 
 class softmax_layer: public layer
@@ -86,17 +86,17 @@ public:
 	~softmax_layer(){}
 	
 	softmax_layer(int p_n_inputs, int p_n_units,
-			MatrixXd* x, MatrixXd* dEdx,
-			int p_batch_size, double p_activation_rate, double p_scale, double p_max_col_norm);
+			MatrixXf* x, MatrixXf* dEdx,
+			int p_batch_size, float p_activation_rate, float p_scale, float p_max_col_norm);
 	
 	void softmax();
 	void init();
 	void fprop(bool test);
-	void bprop(MatrixXd* t, double LR, double momentum);
+	void bprop(MatrixXf* t, float LR, float momentum);
 	
 	// cost functions
-	int getLineMaxIndex(MatrixXd* X, int line);
-	double nll_sum(MatrixXd* t);
+	int getLineMaxIndex(MatrixXf* X, int line);
+	float nll_sum(MatrixXf* t);
 };
 
 #endif

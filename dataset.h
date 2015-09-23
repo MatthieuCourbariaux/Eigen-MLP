@@ -3,7 +3,7 @@
 #define _DATASET
 
 #include <Eigen/Core>
-using Eigen::MatrixXd;
+using Eigen::MatrixXf;
 
 //dataSet class
 class dataSet
@@ -14,8 +14,8 @@ public:
 	int size;
 	int nTarget;
 	int nPattern;
-	MatrixXd** pattern; //input patterns
-	MatrixXd** target; //target results
+	MatrixXf** pattern; //input patterns
+	MatrixXf** target; //target results
 
 	dataSet(){}
 

@@ -16,9 +16,8 @@ Specifications of the trainer :
 
 // Train the NN using gradient descent
 void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSet, dataSet* testSet, 
-	double learningRate, double LR_decay, double LR_min, 
-	int earlyStop, 
-	double momentum, int momentum_sat, double momentum_fin);
+	float learningRate, float LR_decay, float momentum,
+	int nEpochs);
 
 #endif
 

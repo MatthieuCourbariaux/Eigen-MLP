@@ -9,13 +9,13 @@
 #include "layer.h"
 #include <Eigen/Core>
 
-using Eigen::MatrixXd;
+using Eigen::MatrixXf;
 using namespace std;
 
 // constructor
 neuralNetwork::neuralNetwork(int p_hidden_layer, 
 	int p_input_units, int p_output_units, int p_maxout_units, int p_maxout_pieces, 
-	int p_batch_size, double p_dropout_input, double p_dropout_hidden, double p_max_col_norm)
+	int p_batch_size, float p_dropout_input, float p_dropout_hidden, float p_max_col_norm)
 {	
 	n_hidden_layers = p_hidden_layer;
 	batch_size = p_batch_size;
@@ -51,7 +51,7 @@ void neuralNetwork::init()
 	output_layer->init();
 }
 
-void neuralNetwork::fProp(MatrixXd* p_x, bool test)
+void neuralNetwork::fProp(MatrixXf* p_x, bool test)
 {	
 	// save the input
 	x = *p_x;
@@ -61,14 +61,14 @@ void neuralNetwork::fProp(MatrixXd* p_x, bool test)
 	output_layer->fprop(test);
 }
 
-void neuralNetwork::bProp(MatrixXd* t, double LR, double momentum)
+void neuralNetwork::bProp(MatrixXf* t, float LR, float momentum)
 {
 	// backpropagate the error through the layers
 	output_layer->bprop(t,LR,momentum);
 	for (int i = n_hidden_layers-1; i >= 0; i--) hidden_layer[i]->bprop(LR,momentum);
 }
 
-void neuralNetwork::train(dataSet* set, double LR, double momentum)
+void neuralNetwork::train(dataSet* set, float LR, float momentum)
 {
 	// for every training pattern batch
 	for (int j = 0; j < set->size; j++)
@@ -82,7 +82,7 @@ void neuralNetwork::train(dataSet* set, double LR, double momentum)
 }
 
 // Return the NN accuracy on the set
-void neuralNetwork::test(dataSet* set, double* error, double* nll)
+void neuralNetwork::test(dataSet* set, float* error, float* nll)
 {
 	*error = 0;
 	*nll = 0;
