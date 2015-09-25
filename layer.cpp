@@ -4,6 +4,8 @@
 #include <random>
 #include <time.h>
 #include "layer.h"
+#include "approximation.h"
+#include <ctime>
 using namespace std;
 
 void layer::save()
@@ -20,19 +22,45 @@ void layer::load()
 
 void layer::fprop_weighted_sum(bool test)
 {
-	if(test) z = (*x) * w.transpose() * scale + MatrixXf::Constant(batch_size,1,1) * b;
-	else
-	{
-		dropout();
-		*x = (*x).cwiseProduct(dropout_mask);
-		z = (*x) * w.transpose() + MatrixXf::Constant(batch_size,1,1) * b;
-	}
+    
+    clock_t start_time;
+    float elapsed_time;
+    
+    // start_time = clock();
+    // z = prod_approx(*x,w.transpose() * scale);
+    // elapsed_time = float(clock()-start_time)/ (CLOCKS_PER_SEC*Eigen::nbThreads());
+    // cout <<endl<<"	approx elapsed_time = " << elapsed_time<<"s";
+    
+    // start_time = clock();
+    // z = (*x) * w.transpose() * scale;
+    // elapsed_time = float(clock()-start_time)/ (CLOCKS_PER_SEC*Eigen::nbThreads());
+    // cout <<endl<<"	exact elapsed_time = " << elapsed_time<<"s";
+    
+    // cin.get();
+    
+    if(test) z = prod_approx(*x,w.transpose() * scale)+ MatrixXf::Constant(batch_size,1,1) * b;
+    else
+    {
+        dropout();
+        *x = (*x).cwiseProduct(dropout_mask);
+
+        z = prod_approx(*x,w.transpose()) + MatrixXf::Constant(batch_size,1,1) * b; // I should broadcast b...
+    }
+    
+	// if(test) z = (*x) * w.transpose() * scale + MatrixXf::Constant(batch_size,1,1) * b;
+	// else
+	// {
+		// dropout();
+		// *x = (*x).cwiseProduct(dropout_mask);
+		// z = (*x) * w.transpose() + MatrixXf::Constant(batch_size,1,1) * b;
+	// }
 }
 
 void layer::bprop_weighted_sum()
 {		
 	// we don't need that part for the first hidden layer
-	*dEdx = dEdz * w;
+	*dEdx = prod_approx(dEdz,w);
+	// *dEdx = dEdz * w;
 	*dEdx = (*dEdx).cwiseProduct(dropout_mask);
 }
 
@@ -40,7 +68,8 @@ void layer::update(float LR, float momentum)
 {		
 	// gradient of parameters
 	dEdb = MatrixXf::Constant(1,batch_size, 1) * dEdz; // dE/db = dz/db * dE/dz with dz/db = 1
-	dEdw = dEdz.transpose() * (*x); // dE/dw = dz/dw * dE/dz with dz/dw = x
+	dEdw = prod_approx(dEdz.transpose(),(*x)); // dE/dw = dz/dw * dE/dz with dz/dw = x
+	// dEdw = dEdz.transpose() * (*x); // dE/dw = dz/dw * dE/dz with dz/dw = x
 	
 	// update
 	update_b = update_b * momentum + dEdb * (LR * (1-momentum));

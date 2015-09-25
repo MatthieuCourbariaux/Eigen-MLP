@@ -21,7 +21,8 @@ void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSe
 	float test_nll;
 	float train_error;
 	float train_nll;
-    clock_t elapsed_time;
+    clock_t start_time;
+    float elapsed_time;
 	
 	// initialize the neural network
 	NN->init();
@@ -31,7 +32,7 @@ void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSe
 	
 	for(int epoch=1; epoch<=nEpochs;epoch++)
 	{		
-        elapsed_time = clock();
+        start_time = clock();
         
 		// train the model on the train set
 		NN->train(trainingSet, LR, momentum);
@@ -39,7 +40,7 @@ void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSe
 		// validation test
 		NN->test(validationSet,&validation_error, &validation_nll);
 		
-        elapsed_time = float(clock()-elapsed_time)/ (CLOCKS_PER_SEC*Eigen::nbThreads());
+        elapsed_time = float(clock()-start_time)/ (CLOCKS_PER_SEC*Eigen::nbThreads());
         
 		// monitoring
 		cout <<endl<<"Epoch "<<epoch;
@@ -51,6 +52,7 @@ void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSe
 		// Save the model
 		if (validation_error <= best_validation_error)
 		{	
+            best_validation_error=validation_error;
             cout <<endl<<"	Saving the model... ";
 			NN->save();
 		}
