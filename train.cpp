@@ -2,7 +2,6 @@
 #include "train.h"
 #include "dataset.h"
 #include <iostream>
-#include <ctime>
 using namespace std;
 
 // Train the NN using gradient descent
@@ -21,8 +20,7 @@ void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSe
 	float test_nll;
 	float train_error;
 	float train_nll;
-    clock_t start_time;
-    float elapsed_time;
+    double elapsed_time;
 	
 	// initialize the neural network
 	NN->init();
@@ -32,7 +30,7 @@ void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSe
 	
 	for(int epoch=1; epoch<=nEpochs;epoch++)
 	{		
-        start_time = clock();
+        elapsed_time = omp_get_wtime();
         
 		// train the model on the train set
 		NN->train(trainingSet, LR, momentum);
@@ -40,7 +38,7 @@ void trainNetwork(neuralNetwork* NN, dataSet* trainingSet, dataSet* validationSe
 		// validation test
 		NN->test(validationSet,&validation_error, &validation_nll);
 		
-        elapsed_time = float(clock()-start_time)/ (CLOCKS_PER_SEC*Eigen::nbThreads());
+        elapsed_time = omp_get_wtime()-elapsed_time;
         
 		// monitoring
 		cout <<endl<<"Epoch "<<epoch;

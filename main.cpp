@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	// 12 cores -> 30 secondes per epoch
 	// 2 cores -> 35 secondes per epoch
 	// 1 core -> 45 secondes per epoch
-	Eigen::setNbThreads(1);
+	Eigen::setNbThreads(4);
     // int n = 1;
     // Eigen::setNbThreads(atoi(argv[n++]));
 	cout<<"Number of threads: "<<Eigen::nbThreads()<<endl<<endl;	
@@ -22,29 +22,29 @@ int main(int argc, char* argv[])
 	cout<<"Hyper-parameters: "<<endl<<endl;
 	
 	// MLP parameters
-	int nHLayer = 1; // min = 1, otherwise it is not a MLP
+	int nHLayer = 3; // min = 1, otherwise it is not a MLP
 	cout<<"Number of hidden layers: "<<nHLayer<<endl;	
-	int maxout_units = 64; 
+	int maxout_units = 240; 
 	cout<<"Maxout units: "<<maxout_units<<endl;
-	int maxout_pieces = 2;
+	int maxout_pieces = 5;
 	cout<<"Maxout pieces: "<<maxout_pieces<<endl;
 	
 	// SGD parameters
-	float learningRate = .01;
+	float learningRate = .1;
 	cout<<"Learning rate: "<<learningRate<<endl;
-	float LR_decay = 1.;
+	float LR_decay = .992;
 	cout<<"Learning rate decay factor: "<<LR_decay<<endl;
 	float momentum = .9;
 	cout<<"Momentum: "<<momentum<<endl;
-	int nEpochs = 200;
+	int nEpochs = 1000;
 	cout<<"nEpochs: "<<nEpochs<<endl;
-	int batch_size = 200;
+	int batch_size = 100;
 	cout<<"Batch size: "<<batch_size<<endl;
-	float dropout_input = 1.;
+	float dropout_input = .8;
 	cout<<"Dropout input layer: "<<dropout_input<<endl;
-	float dropout_hidden = 1.;
+	float dropout_hidden = .5;
 	cout<<"Dropout hidden layers: "<<dropout_hidden<<endl;
-	float max_col_norm = 10.;
+	float max_col_norm = 2.;
 	cout<<"Max column norm: "<<max_col_norm<<endl;
 	
 	// load trainingSet
